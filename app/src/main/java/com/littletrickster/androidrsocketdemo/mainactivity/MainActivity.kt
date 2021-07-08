@@ -19,9 +19,7 @@ class MainActivity : BasePermissionActivity() {
 
     val viewModel: MainActivityViewModel by inject()
 
-
     lateinit var binding: ActivityMainBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +28,6 @@ class MainActivity : BasePermissionActivity() {
 
             binding = ActivityMainBinding.inflate(layoutInflater)
             setContentView(binding.root)
-
 
             val startStopServiceButton = binding.startServiceButton
 

@@ -1,7 +1,10 @@
 package com.littletrickster.androidrsocketdemo.server
 
 import android.content.Context
-import com.littletrickster.androidrsocketdemo.*
+import com.littletrickster.androidrsocketdemo.CONNECTION_COUNT
+import com.littletrickster.androidrsocketdemo.COUNTER
+import com.littletrickster.androidrsocketdemo.CURRENT_COLOR
+import com.littletrickster.androidrsocketdemo.GlobalSquareColor
 import com.littletrickster.androidrsocketdemo.square.UUIDAndMySquareColors
 import io.ktor.application.*
 import io.ktor.response.*
@@ -24,14 +27,10 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.coroutineContext
-
-@Serializable
-class NumberAndText(val number: String, val text: String)
 
 class MyKtorServer(
     val context: Context,
@@ -42,8 +41,6 @@ class MyKtorServer(
 
 
     var connection = MutableSharedFlow<Boolean>()
-//        .onStart { emit(true) }
-//        .onCompletion { emit(false) }
 
     var connectedDeviceCount = connection.subscriptionCount
 
@@ -53,6 +50,7 @@ class MyKtorServer(
 
     val incrementalFlow = MutableSharedFlow<Int>(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     var counterJob: Job? = null
+
     suspend fun runServer() {
         counterJob?.cancel()
         counterJob = GlobalScope.launch {
@@ -152,12 +150,4 @@ class MyKtorServer(
     }
 
 }
-
-fun Job.status(): String = when {
-    isCancelled -> "cancelled"
-    isActive -> "Active"
-    isCompleted -> "Complete"
-    else -> "Nothing"
-}
-
 
