@@ -9,8 +9,10 @@ import com.littletrickster.androidrsocketdemo.fservice.ServiceLauncher
 import com.littletrickster.androidrsocketdemo.square.MySquareColors
 import com.littletrickster.androidrsocketdemo.square.UUIDAndMySquareColors
 import io.ktor.client.*
+import io.ktor.client.features.*
 import io.rsocket.kotlin.RSocket
-import io.rsocket.kotlin.transport.ktor.client.rSocket
+import io.rsocket.kotlin.core.RSocketConnector
+import io.rsocket.kotlin.transport.ktor.client.WebSocketClientTransport
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -42,7 +44,7 @@ class MainActivityViewModel : ViewModel(), KoinComponent {
     val clientLock = Mutex()
 
     private val handler = CoroutineExceptionHandler { c, e ->
-        rsocket?.job?.cancel()
+        rsocket?.cancel()
         rsocket = null
         clientConnected.tryEmit(false)
         connectionCount.tryEmit(0)
@@ -54,12 +56,16 @@ class MainActivityViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch(handler) {
             clientLock.withLock {
                 if (clientConnected.value) return@launch
-                val currentRsocket =
-                    httpClient.rSocket(host = address, port = 8000, path = "/rsocket")
+
+                val connection =
+                    WebSocketClientTransport(httpClient, host = address, port = 8000, path = "/rsocket", secure = false)
+
+                val currentRsocket = RSocketConnector{}.connect(connection)
 
                 clientConnected.tryEmit(true)
 
-                currentRsocket.job.invokeOnCompletion {
+
+                currentRsocket.coroutineContext[Job]!!.invokeOnCompletion {
                     clientConnected.tryEmit(false)
                 }
 
@@ -93,7 +99,7 @@ class MainActivityViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             clientLock.withLock {
                 if (!clientConnected.value) return@launch
-                rsocket?.job?.cancel()
+                rsocket?.cancel()
                 rsocket = null
                 connectionCount.tryEmit(0)
             }
@@ -174,7 +180,7 @@ class MainActivityViewModel : ViewModel(), KoinComponent {
         .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     override fun onCleared() {
-        rsocket?.job?.cancel()
+        rsocket?.cancel()
     }
 }
 

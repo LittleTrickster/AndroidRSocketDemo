@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.littletrickster.androidrsocketdemo.R
@@ -77,8 +78,12 @@ class MyService : Service() {
         val stackBuilder = TaskStackBuilder.create(this)
             .addNextIntent(intent)
 
-        val resultPendingIntent =
-            stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val resultPendingIntent = stackBuilder.getPendingIntent(
+            0,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            else PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
 
 
         val builder = NotificationCompat.Builder(this, ServiceLauncher.id)

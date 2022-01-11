@@ -21,7 +21,8 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="com.littletrickster.androidrsocketdemo.mainactivity.MainActivity">
+        <activity android:name="com.littletrickster.androidrsocketdemo.mainactivity.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
