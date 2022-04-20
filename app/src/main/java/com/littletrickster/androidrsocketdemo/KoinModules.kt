@@ -5,11 +5,12 @@ import com.littletrickster.androidrsocketdemo.mainactivity.MainActivityViewModel
 import com.littletrickster.androidrsocketdemo.server.MyKtorServer
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
 import io.rsocket.kotlin.core.RSocketConnector
 import io.rsocket.kotlin.core.WellKnownMimeType
+import io.rsocket.kotlin.ktor.client.RSocketSupport
 import io.rsocket.kotlin.payload.PayloadMimeType
-import io.rsocket.kotlin.transport.ktor.client.RSocketSupport
+
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

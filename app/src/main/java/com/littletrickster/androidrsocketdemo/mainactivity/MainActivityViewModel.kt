@@ -9,10 +9,11 @@ import com.littletrickster.androidrsocketdemo.fservice.ServiceLauncher
 import com.littletrickster.androidrsocketdemo.square.MySquareColors
 import com.littletrickster.androidrsocketdemo.square.UUIDAndMySquareColors
 import io.ktor.client.*
-import io.ktor.client.features.*
+import io.ktor.client.engine.*
+import io.ktor.client.engine.cio.*
 import io.rsocket.kotlin.RSocket
 import io.rsocket.kotlin.core.RSocketConnector
-import io.rsocket.kotlin.transport.ktor.client.WebSocketClientTransport
+import io.rsocket.kotlin.transport.ktor.websocket.client.WebSocketClientTransport
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -57,8 +58,17 @@ class MainActivityViewModel : ViewModel(), KoinComponent {
             clientLock.withLock {
                 if (clientConnected.value) return@launch
 
+//                object :io.ktor.client.engine.HttpClientEngineFactory<String>{
+//                    override fun create(block: String.() -> Unit): HttpClientEngine {
+//                        return httpClient
+//                    }
+//                }
+
+
+
+
                 val connection =
-                    WebSocketClientTransport(httpClient, host = address, port = 8000, path = "/rsocket", secure = false)
+                    WebSocketClientTransport(CIO, host = address, port = 8000, path = "/rsocket", secure = false)
 
                 val currentRsocket = RSocketConnector{}.connect(connection)
 
